@@ -18,6 +18,8 @@ void setup() {
   String portName = Serial.list()[1]; //change the 0 to a 1 or 2 etc. to match your port
   printArray(Serial.list());
   myPort = new Serial(this, portName, 19200);
+  
+  processImage("lab.jpg");
 }
 
 void draw(){
@@ -26,25 +28,9 @@ void draw(){
   }
  
    image(cam, 0, 0 );
-   
- if ( myPort.available() > 0) 
-  {  // If data is available,
-  val = myPort.readStringUntil('\n');         // read it and store it in val
-  } 
-  if(val == "1"){
-    saveFrame("capture.png");
-    processImage("capture.png");
-  }
 }
 
 
-//void keyPressed(){
-//  if(key == ' ') {
-//    saveFrame("capture.png"); 
-//    processImage("capture.png");
-//    myPort.write('1'); 
-//  }
-//}
 void processImage(String filePath) {
   String      filename, basename;
   PImage      img;
@@ -97,6 +83,7 @@ void processImage(String filePath) {
           output.print("\n ");
           bytesOnLine = 0;
       }
+      myPort.write(sum);
       output.format(" 0x%02X", sum); // Write accumulated bits
       if(++byteNum < totalBytes) output.print(',');
     }

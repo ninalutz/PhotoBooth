@@ -12,7 +12,7 @@
   ------------------------------------------------------------------------*/
 
 #include "Adafruit_Thermal.h"
-#include "capture.h"
+#include "lab.h"
 #include "SoftwareSerial.h"
 #define TX_PIN 6 // Arduino transmit  YELLOW WIRE  labeled RX on printer
 #define RX_PIN 5 // Arduino receive   GREEN WIRE   labeled TX on printer
@@ -36,30 +36,28 @@ void setup() {
   // NOTE: SOME PRINTERS NEED 9600 BAUD instead of 19200, check test page.
   mySerial.begin(19200);  // Initialize SoftwareSerial
   Serial.begin(19200);
+  Serial.flush();
 }
 
 void loop() {
   buttonState = (buttonState << 1) | digitalRead(buttonPin); // logic calc -- thanks C 
-  sendSerial();
   if(buttonState == 1){
-     sendSerial();
-     delay(10000);
      doPrinter();
+     buttonState = 0;
   }
-  
 }
 
 void doPrinter(){
-    
   printer.begin();        // Init printer (same regardless of serial type)
- 
   // Print the 75x75 pixel logo in adalogo.h:
-  printer.printBitmap(capture_width, capture_width, capture_data);
-
   printer.feed(2);
-
+  printer.print("Thanks for coming to 99F <3!");
+ // printer.printBitmap(400, 216, lab_data);
+  printer.println("Save the date for");
+  printer.println("our Valentines Party!");
+  printer.feed(2);
+  printer.setDefault(); // Restore printer to defaults
   printer.sleep();      // Tell printer to sleep
   delay(3000L);         // Sleep for 3 seconds
   printer.wake();       // MUST wake() before printing again, even if reset
-  printer.setDefault(); // Restore printer to defaults
   }
